@@ -23,27 +23,27 @@
 #endif
 /**************************************************************************/
 /*!
-    @brief  Abstract away platform differences in Arduino wire library
+    @brief  Abstract away platform differences in Arduino Wire11 library
 */
 /**************************************************************************/
 static uint8_t i2cread(void) {
   #if ARDUINO >= 100
-  return Wire.read();
+  return Wire1.read();
   #else
-  return Wire.receive();
+  return Wire1.receive();
   #endif
 }
 
 /**************************************************************************/
 /*!
-    @brief  Abstract away platform differences in Arduino wire library
+    @brief  Abstract away platform differences in Arduino Wire1 library
 */
 /**************************************************************************/
 static void i2cwrite(uint8_t x) {
   #if ARDUINO >= 100
-  Wire.write((uint8_t)x);
+  Wire1.write((uint8_t)x);
   #else
-  Wire.send(x);
+  Wire1.send(x);
   #endif
 }
 
@@ -55,9 +55,9 @@ static void i2cwrite(uint8_t x) {
 /**************************************************************************/
 static void restart()
 {
-	Wire.beginTransmission(0x00);
+	Wire1.beginTransmission(0x00);
 	i2cwrite((uint8_t)0x06);
-	Wire.endTransmission();
+	Wire1.endTransmission();
 }
 
 /**************************************************************************/
@@ -69,10 +69,10 @@ static void restart()
 
 static void writeRegister(uint8_t i2cAddress, uint8_t reg, uint8_t value) 
 {
-  Wire.beginTransmission(i2cAddress);
+  Wire1.beginTransmission(i2cAddress);
   i2cwrite((uint8_t)reg);
   i2cwrite((uint8_t)(value));
-  Wire.endTransmission();
+  Wire1.endTransmission();
 }
 
 /**************************************************************************/
@@ -82,10 +82,10 @@ static void writeRegister(uint8_t i2cAddress, uint8_t reg, uint8_t value)
 /**************************************************************************/
 static uint8_t readRegister(uint8_t i2cAddress, uint8_t reg) 
 {
-  Wire.beginTransmission(i2cAddress);
+  Wire1.beginTransmission(i2cAddress);
   i2cwrite(reg);
-  Wire.endTransmission();
-  Wire.requestFrom(i2cAddress, (uint8_t)1);
+  Wire1.endTransmission();
+  Wire1.requestFrom(i2cAddress, (uint8_t)1);
   return i2cread(); 
 }
 
@@ -107,7 +107,7 @@ PCAL6524::PCAL6524(uint8_t i2cAddress)
 */
 /**************************************************************************/
 void PCAL6524::begin() {
-  Wire.begin();
+  Wire1.begin();
   restart();
 }
 
@@ -188,7 +188,7 @@ void PCAL6524::remotepinMode(uint16_t pin, uint8_t mode)
 		writeRegister(m_i2cAddress,PCAL6524_RESISTOR_PULL_SELECTION,pullup_value_data);
 		return;
 	}
-	else if (mode == INPUT_PULLDOWN)
+	else if (mode == INPUT_PDOWN)
 	{
 		//Combine the current configuration with the request pin to ensure that only that pin has chaned
 		config_data = config_data | pin;
